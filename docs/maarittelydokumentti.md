@@ -9,4 +9,5 @@ Syötteen infix-notaatiosta postfix-notaatioon muuttava algoritmin tulee toimia 
 ## Viitteet
 
 [Shunting yard -algoritmi Wikipediassa](https://en.wikipedia.org/wiki/Shunting_yard_algorithm)
+
 [Postfix-notaatio (Reverse Polish notation) Wikipediassa](https://en.wikipedia.org/wiki/Reverse_Polish_notation)
