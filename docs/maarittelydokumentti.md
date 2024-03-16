@@ -1,4 +1,4 @@
-# Sovellusten vaatimusten määrittely
+# Sovelluksen vaatimusten määrittely
 
 Tämä dokumentti määrittelee vaatimukset kurssin 'Aineopintojen harjoitustyö: Algoritmit ja tekoäly' harjoitustyösovellukselle. Kurssi tehdään osana Helsingin yliopiston Tietojenkäsittelytieteen kandidaatin tutkintoa. Harjoitustyö tehdään Pythonilla, mutta voin tarvittaessa vertaisarvioida myös sovelluksia, jotka on tehty Javalla. Projekti on dokumentoitu suomeksi ja koodi on kirjoitettu englanniksi.
 

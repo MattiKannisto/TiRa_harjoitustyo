@@ -1,4 +1,4 @@
-# TiRa_harjoitustyo
+# tira_harjoitustyo
 
 ## Dokumentaatio
 
