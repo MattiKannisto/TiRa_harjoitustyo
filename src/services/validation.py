@@ -15,34 +15,34 @@ def incorrect_brackets(unvalidated_input: list[int]) -> bool:
     for char in unvalidated_input:
         if open_brackets < 0:
             return True
-        elif char == left:
+        if char == left:
             open_brackets += 1
         elif char == right:
             open_brackets -= 1
     return open_brackets != 0
 
-def unassigned_variables(values: list[int], possible_vars: range, vars: range) -> bool:
-    """Checks whether input list of unicode point integers contains integers for unassigned variables
-    which are to a dictionary where keys are capital letters from A to Z
+def unassigned_variables(values: list[int], possible_variables: range, variables: range) -> bool:
+    """Checks whether input list of unicode point integers contains integers for unassigned
+    variables which are to a dictionary where keys are capital letters from A to Z
 
     Args:
         values (list[int]): list of unicode point integers of the input string
-        possible_vars (range): range of unicode point integers from A to Z
-        vars (range): range of unicode point integers of assigned variables
+        possible_variables (range): range of unicode point integers from A to Z
+        variables (range): range of unicode point integers of assigned variables
 
     Returns:
         bool: whether unassigned variables were found
     """
-    
+
     for value in values:
-        if value in possible_vars:
-            if value not in vars:
+        if value in possible_variables:
+            if value not in variables:
                 return True
     return False
 
 def improper_operator_use(unvalidated_input: list[int], operators: list[int]) -> bool:
-    """Checks whether input list of unicode point integers contains operators as the first or last character
-    of the input or whether there are two adjacent operators
+    """Checks whether input list of unicode point integers contains operators as the first
+    or last character of the input or whether there are two adjacent operators
 
     Args:
         unvalidated_input (list[int]): list of unicode point integers of the input string
