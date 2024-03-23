@@ -1,6 +1,6 @@
 import typing
 from tkinter import *
-from algorithms import algorithms, validation
+from services import algorithms, validation
 
 def start_ui():
     root = Tk()

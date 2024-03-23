@@ -1,6 +1,6 @@
 import unittest
 
-from algorithms import algorithms
+from services import algorithms
 
 class TestValidation(unittest.TestCase):
 
