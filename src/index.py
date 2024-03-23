@@ -1,11 +1,7 @@
-from tkinter import *
-from ui import UserInterface
+from ui import ui
 
 def main():
-    root = Tk()
-    root.title("Scientific Calculator")
-    UserInterface(root)
-    root.mainloop()
+    ui.start_ui()
 
 if __name__ == '__main__':
     main()
