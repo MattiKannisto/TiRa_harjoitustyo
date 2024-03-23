@@ -11,10 +11,12 @@ def start_ui():
 
 
 class UserInterface():
-    """A class for the graphical user interface of a scientific calculator.
+    """Graphical user interface for a scientific calculator.
     """
 
     def __init__(self, root):
+        # Unicode code point integers of all allowed characters of the input. These are used in identification
+        # of different elements in the input for validation purposes
         self._operators_ints = algorithms.string_to_unicode_code_point_integers('+-*/^')
         self._dot_int = ord('.')
         self._space_int = ord(' ')
@@ -23,13 +25,14 @@ class UserInterface():
         self._var_ints = range(ord('A'),ord('Z')+1)
         self._operator_char_ints = range(ord('a'),ord('z')+1)
         self._number_ints = range(ord('0'),ord('9')+1)
+        # Dictionary for identifying function names from the input's lowercase alphabets
         self._function_names = {ord('s'): {ord('i'): {ord('n'): "sin"}, ord('q'): {ord('r'): {ord('t'): "sqrt"}}},
                                ord('m'): {ord('a'): {ord('x'): "max"}, ord('i'): {('n'): "min"}},
                                ord('l'): {ord('n'): "ln", ord('o'): {ord('g'): "log"}},
                                ord('c'): {ord('o'): {ord('s'): "cos"}},
                                ord('p'): {ord('i'): "pi"},
                                ord('e'): "e"}
-
+        # Variables used by the GUI
         self._root = root
         self._ui_font = "Arial, 15"
         self._variables = {}
@@ -41,6 +44,10 @@ class UserInterface():
                                ['1','2','3','*','sqrt'],
                                ['(','0',')','/','^','='],
                                ['C','AC','.','log','e', '→X']]
+
+        def append_to_input(menu_var):
+            self._input.set(self._input.get() + menu_var)
+            update_input_area()
 
         def move_to_history(current_input):
             self._history_area[-1].config(text=current_input)
@@ -67,6 +74,7 @@ class UserInterface():
             elif button_pressed == "=" or button_pressed == '→X':
                 if input := self._input.get():
                     move_old_history_upwards()
+                    # Convert input strings characters into a list of unicode point integer list to simplify validation
                     chars_as_ints = algorithms.string_to_unicode_code_point_integers(input)
                     if validation.incorrect_brackets(chars_as_ints):
                         move_to_history("Invalid use of brackets!")
@@ -79,6 +87,7 @@ class UserInterface():
                                                                                      variables=self._var_ints, numbers=self._number_ints,
                                                                                      left_bracket=self._left_bracket_int, right_bracket=self._right_bracket_int,
                                                                                      dot=self._dot_int, operators=self._operators_ints, space=self._space_int)
+                        print(input_list)
                         input += " = [result]"
                         if button_pressed == '→X':
                             save_result_to_variable()
@@ -110,10 +119,6 @@ class UserInterface():
                     new_button = Button(self._button_frame, text=str(button), font=self._ui_font, height=5, width=10)
                     new_button.grid(row=self._button_layout.index(button_row)+starting_row, column=button_row.index(button))
                     bind_right_mouse_click_to_input_addition(new_button)
-
-        def append_to_input(menu_var):
-            self._input.set(self._input.get() + menu_var)
-            update_input_area()
 
         self._var_label = Label(self._button_frame, text="Variables:", font=self._ui_font)
         self._var_label.grid(row=11, column=5, sticky="S")
