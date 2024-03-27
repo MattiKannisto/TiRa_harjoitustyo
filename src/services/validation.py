@@ -1,26 +1,3 @@
-def incorrect_brackets(unvalidated_input: list[int]) -> bool:
-    """Checks whether the input list contains unicode point integers for '(' and ')'
-    in incorrect order
-
-    Args:
-        unvalidated_input (list[int]): list of unicode point integers of the input string
-
-    Returns:
-        bool: whether incorrect usage of brackets was found
-    """
-
-    open_brackets = 0
-    left = ord("(")
-    right = ord(")")
-    for char in unvalidated_input:
-        if open_brackets < 0:
-            return True
-        if char == left:
-            open_brackets += 1
-        elif char == right:
-            open_brackets -= 1
-    return open_brackets != 0
-
 def unassigned_variables(values: list[int], possible_variables: range, variables: range) -> bool:
     """Checks whether input list of unicode point integers contains integers for unassigned
     variables which are to a dictionary where keys are capital letters from A to Z
@@ -55,5 +32,29 @@ def improper_operator_use(unvalidated_input: list[int], operators: list[int]) ->
     for i in range(len(unvalidated_input)):
         if unvalidated_input[i] in operators:
             if i == 0 or i == (len(unvalidated_input)-1) or unvalidated_input[i-1] in operators:
+                return True
+    return False
+
+def element_in_list(input_list: list[int], element: int) -> bool:
+    return element in input_list
+
+def improper_function_use(input_list: list[int], alphabets: range, left_bracket: int,
+                          right_bracket: int, numbers: range, dot: int) -> bool:
+    for i in range(len(input_list)):
+        if input_list[i][0] in alphabets:
+            if len(input_list) - i < (3 + (input_list[i][0] == ord('m'))+1):
+                return True
+            j = 1
+            if input_list[i+j][0] is not left_bracket:
+                return True
+            j += 1
+            if input_list[i+j][0] not in numbers:
+                return True
+            if input_list[i][0] == ord('m'):
+                if input_list[i+j][0] not in numbers:
+                    return True
+                j += 1
+            j += 1
+            if input_list[i+j][0] is not right_bracket:
                 return True
     return False
