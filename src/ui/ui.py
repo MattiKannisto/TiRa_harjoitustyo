@@ -1,7 +1,6 @@
 import typing
-import math
 from tkinter import *
-from services import algorithms, validation, math_functions
+from services import algorithms, validation
 
 def start_ui():
     root = Tk()
@@ -15,41 +14,19 @@ class UserInterface():
     """
 
     def __init__(self, root):
-        # Unicode code point integers of all allowed characters of the input. These are used in identification
-        # of different elements in the input for validation purposes
-        self._operators_ints = algorithms.string_to_unicode_code_point_integers('+-*/^')
-        self._dot_int = ord('.')
-        self._space_int = ord(' ')
-        self._left_bracket_int = ord('(')       
-        self._right_bracket_int = ord(')')
-        self._var_ints = range(ord('A'),ord('Z')+1)
-        self._operator_char_ints = range(ord('a'),ord('z')+1)
-        self._number_ints = range(ord('0'),ord('9')+1)
-        # Dictionary for identifying function names from the input's lowercase alphabets
-        self._function_names = {ord('s'): {ord('i'): {ord('n'): "sin"}, ord('q'): {ord('r'): {ord('t'): "sqrt"}}},
-                               ord('m'): {ord('a'): {ord('x'): "max"}, ord('i'): {('n'): "min"}},
-                               ord('l'): {ord('n'): "ln", ord('o'): {ord('g'): "log"}},
-                               ord('c'): {ord('o'): {ord('s'): "cos"}},
-                               ord('p'): {ord('i'): "pi"},
-                               ord('e'): "e"}
+        self._calculator = algorithms.Calculator()
+        self._validator = validation.Validator()
         # Variables used by the GUI
-        self._operations = {'+': math_functions.add, '-': math_functions.subtract, '*': math_functions.multiply,
-                            '/': math_functions.divide, '^': math_functions.raise_to_exponent, 'sin': math.sin,
-                            'cos': math.cos, 'tan': math.tan, 'max': max, 'min': min, 'ln': math.log, 'log': math.log10,
-                            'pi': math.pi, 'sqrt': math.sqrt}
-        self._operands_no = {'+': 2, '-': 2, '*': 2, '/': 2, '^': 2, 'sin': 1, 'cos': 1, 'tan': 1, 'max': 2, 'min': 2,
-                             'ln': 1, 'log': 1, 'pi': 0, 'sqrt': 1}
         self._root = root
         self._ui_font = "Arial, 15"
         self._variables = {}
         self._input = StringVar()
-        self._history = StringVar()
-        self._button_layout = [['sin','cos','tan','max','min'],
-                               ['7','8','9','+','ln'],
-                               ['4','5','6','-','pi'],
-                               ['1','2','3','*','sqrt', 'space'],
-                               ['(','0',')','/','^','='],
-                               ['C','AC','.','log','e', '→X']]
+        self._button_layout = [['sin', 'cos', 'tan', 'max', 'min'],
+                               ['7',   '8',   '9',   '+',   'ln'],
+                               ['4',   '5',   '6',   '-',   'pi'],
+                               ['1',   '2',   '3',   '*',   'sqrt', ','],
+                               ['(',   '0',   ')',   '/',   '^',    '='],
+                               ['C',   'AC',  '.',   'log', 'e',    '→X']]
 
         def append_to_input(menu_var):
             self._input.set(self._input.get() + menu_var)
@@ -80,55 +57,27 @@ class UserInterface():
                 self._input.set(self._input.get()[:-1])
             elif button_pressed == "AC":
                 self._input.set("")
-            elif button_pressed == "=" or button_pressed == '→X':
-                if input := self._input.get():
-                    move_old_history_upwards()
-                    # Convert input strings characters into a list of unicode point integer list to simplify validation
-                    chars_as_ints = algorithms.string_to_unicode_code_point_integers(input)
-                    if validation.unassigned_variables(chars_as_ints, self._var_ints, range(ord('A'),ord('A')+len(self._variables.keys()))):
-                        move_to_history("Unassigned variables used!")
-                    elif validation.improper_operator_use(chars_as_ints, self._operators_ints):
-                        move_to_history("Invalid use of operators!")
-                    else:
-                        input_list = algorithms.input_int_list_to_input_element_list(input=chars_as_ints, alphabets=self._operator_char_ints,
-                                                                                     variables=self._var_ints, numbers=self._number_ints,
-                                                                                     single_chars=[self._left_bracket_int,
-                                                                                                   self._right_bracket_int, self._space_int],
-                                                                                     dot=self._dot_int, operators=self._operators_ints,
-                                                                                     space=self._space_int)
-                        if validation.element_in_list(input_list=input_list, element=[self._dot_int]):
-                            move_to_history("Invalid use of dot!")
-                        # elif validation.improper_function_use(input_list=input_list, alphabets=self._operator_char_ints,
-                        #                                       left_bracket=self._left_bracket_int, right_bracket=self._right_bracket_int,
-                        #                                       numbers=self._number_ints, dot=self._dot_int):
-                        #     move_to_history("Invalide use of functions!")
-                        else:
-                            input_list_in_postfix_notation = algorithms.shunting_yard(validated_input=input_list, alphabets=self._operator_char_ints,
-                                                                                      numbers=self._number_ints, left_bracket=self._left_bracket_int,
-                                                                                      right_bracket=self._right_bracket_int,
-                                                                                      used_operators=self._operators_ints,
-                                                                                      variables=self._variables)
-                            if not input_list_in_postfix_notation:
-                                move_to_history("Mismatched parentheses!")
-                            else:
-                                decimal_places = algorithms.get_min_number_of_decimal_places(input_list, self._dot_int)
-                                input_in_postfix = algorithms.unicode_code_point_integers_to_values(input_list=input_list_in_postfix_notation,
-                                                                                                    numbers=self._number_ints,
-                                                                                                    variable_chars=self._var_ints,
-                                                                                                    variables=self._variables)
-                                result = algorithms.evaluate_input_in_postfix_notation(input_in_postfix, self._operations, self._operands_no)
-                                if decimal_places == 0:
-                                    result_with_correct_precision = int(result)
-                                else:
-                                    result_with_correct_precision = round(result, decimal_places)
-                                input += " = " + str(result_with_correct_precision)
-                                if button_pressed == '→X':
-                                    save_result_to_variable(result_with_correct_precision)
-                                    input += " → " + chr(ord('A')-1+len(self._variables.keys()))
-                                move_to_history(input)
+            elif self._input.get() and (button_pressed == "=" or button_pressed == '→X'):
+                move_old_history_upwards()
+                self._calculator.set_input(self._input.get(), self._variables)
+                if self._validator.unassigned_variables(self._calculator.input_ints, self._variables):
+                    move_to_history("Unassigned variables used!")
+                elif self._validator.improper_operator_use(self._calculator.input_ints):
+                    move_to_history("Invalid use of operators!")
+                elif self._validator.lone_dot_found(input_list=self._calculator.input_elements):
+                    move_to_history("Invalid use of dot!")
+                elif self._validator.improper_function_use(input_list=self._calculator.input_elements):
+                    move_to_history("Invalide use of functions!")
+                elif not self._calculator.input_elements_in_postfix:
+                    move_to_history("Mismatched parentheses!")
+                else:
+                    self._calculator.calculate_result()
+                    self._calculator.input_chars += " = " + str(self._calculator.result)
+                    if button_pressed == '→X':
+                        save_result_to_variable(self._calculator.result)
+                        self._calculator.input_chars += " → " + chr(ord('A')-1+len(self._variables.keys()))
+                    move_to_history(self._calculator.input_chars)
             else:
-                if button_pressed == "space":
-                    button_pressed = " "
                 self._input.set(self._input.get() + button_pressed)
             update_input_area()
 
@@ -164,7 +113,7 @@ class UserInterface():
 
         def key_controls(event):
             operator_keys = {'plus': '+', 'minus': '-', 'asterisk': '*', 'slash': '/', 'parenleft': '(',
-                    'parenright': ')', 'period': '.', 'space': " "}
+                    'parenright': ')', 'period': '.', 'comma': ","}
             key = event.keysym
             if key == "BackSpace":
                 self._input.set(self._input.get()[:-1])
@@ -182,7 +131,7 @@ class UserInterface():
                         self._input.set(self._input.get() + key)
                         update_input_area()
 
-            if len(key) == 1 and (ord(key) in self._operator_char_ints or ord(key) in self._var_ints):
+            if len(key) == 1 and (ord(key) in range(ord('a'),ord('z')+1) or ord(key) in range(ord('A'),ord('Z')+1)):
                 self._input.set(self._input.get() + key)
                 update_input_area()
 
