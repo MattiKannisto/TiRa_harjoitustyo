@@ -4,6 +4,8 @@
 
 [Määrittelydokumentti](https://github.com/MattiKannisto/tira-harjoitustyo/blob/main/docs/maarittelydokumentti.md)
 
+[Testausdokumentti](https://github.com/MattiKannisto/tira-harjoitustyo/blob/main/docs/testausdokumentti.md)
+
 ### Viikkoraportit
 
 [Viikko 1](https://github.com/MattiKannisto/tira-harjoitustyo/blob/main/docs/viikkoraportti_1.md)
