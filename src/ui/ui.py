@@ -71,7 +71,6 @@ class UserInterface():
                 elif not self._calculator.input_elements_in_postfix:
                     self._input.set("Mismatched parentheses!")
                 else:
-                    print(self._calculator._input_values_in_postfix)
                     self._calculator.evaluate_input_in_postfix_notation()
                     self._input.set(self._input.get() + " = " + str(self._calculator.result))
 
