@@ -1,0 +1,4 @@
+# Sovelluksen toteutus
+Sovellus on toteutettu ilman laajojen kielimallien käyttöä.
+### Sovelluksen rakenne ja toiminta
+Sovellus on graafisen käyttöliittymän (GUI) omaava tieteellinen laskin, jolle voidaan antaa syötteitä myös tietokoneen näppäimistön avulla. Käyttäjän infix-notaatiossa antama laskutoimitus annetaan käyttöliittymästä merkkijonona laskutoimituksista vastaavalle oliolle, jolla on käytössä syötteen validoiva olio. Sovellus hyödyntää validoinnissa ja laskutoimitusten evaluoinnissa sitä, että kullekin syötteen merkille on olemassa unicode-kokonaisluku. Tällöin on mahdollista tarkistaa että onko syötteen merkki esim. numero tai kirjain yksinkertaisilla vertailuoperaatioilla. Muunnokset merkkien ja unicode-lukujen välillä tosin monimutkaistaa hieman sovelluksen rakennetta.

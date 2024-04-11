@@ -1,0 +1,3 @@
+Tällä viikolla olen tehnyt lisää automaattisia testejä, parannellut koodin dokumentointia ja tehnyt alustavan version käyttöohjeista. En ole ehtinyt panostaa tällä viikolla koodin laatuun, enkä päivittää testausdokumenttia, sillä käytössäni oli vähemmän työtunteja tällä viikolla. Päätin siksi panostaa enemmän käyttöohjeisiin ja dokumentaatioon, jotta projektini vertaisarviointi olisi helpompaa.
+
+Tällä viikolla käytetyt työtunnit: 10
