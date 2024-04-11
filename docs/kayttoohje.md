@@ -1,7 +1,7 @@
 # Käyttöohjeet
 ### Sovelluksen asennus ja käynnistäminen
 1. Lataa sovelluksen viimeisin release
-2. Asennan projektin riippuvuudet komennolla **poetry install**
+2. Asenna projektin riippuvuudet komennolla **poetry install**
 3. Käynnistä sovellus komennolla **poetry run invoke start**
 
 ### Sovelluksen käyttäminen
