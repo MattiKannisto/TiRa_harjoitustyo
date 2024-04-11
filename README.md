@@ -8,7 +8,7 @@
 
 [Toteutusdokumentti](https://github.com/MattiKannisto/tira-harjoitustyo/blob/main/docs/toteutusdokumentti.md)
 
-[Käyttöohjeet](https://github.com/MattiKannisto/tira-harjoitustyo/blob/main/docs/kayttoohjeet.md)
+[Käyttöohjet](https://github.com/MattiKannisto/tira-harjoitustyo/blob/main/docs/kayttoohje.md)
 
 ### Viikkoraportit
 
