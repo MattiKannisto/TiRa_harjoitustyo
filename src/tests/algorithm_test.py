@@ -12,9 +12,9 @@ class TestValidation(unittest.TestCase):
     def test_input_string_is_converted_to_integers_correctly(self):
         self.assertEqual(self.calculator.chars_to_ints("1+2*3-4"), [ord('1'),ord('+'),ord('2'),ord('*'),ord('3'),ord('-'),ord('4')])
 
-    def test_input_integers_are_converted_to_input_elements_correctly(self):
+    def test_input_integers_are_converted_to_input_tokens_correctly(self):
         input = [ord('1'),ord('2'),ord('+'),ord('s'),ord('i'),ord('n'),ord('('),ord('3'),ord(')'),ord('*'),ord('3')]
-        result = self.calculator.ints_to_elements(input)
+        result = self.calculator.ints_to_tokens(input)
         self.assertEqual(result, [[ord('1'),ord('2')],[ord('+')],[ord('s'),ord('i'),ord('n')],[ord('(')],[ord('3')],[ord(')')],[ord('*')],[ord('3')]])
 
     def test_operators_work_by_themselves(self):
@@ -46,7 +46,7 @@ class TestValidation(unittest.TestCase):
         inputs = [[[ord('(')]]+calc, [[ord(')')]]+calc+[[ord(')')]], [[ord('(')]]+calc+[[ord('(')]], calc+[[ord(')')]]]
         outputs = []
         for input in inputs:
-            outputs.append(self.calculator.shunting_yard(input, {}))
+            outputs.append(self.calculator.shunting_yard(input))
         self.assertEqual(outputs, [deque([]), deque([]), deque([]), deque([])])
 
     def test_result_is_has_appropriate_precision(self):
