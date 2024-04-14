@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter.messagebox import showinfo
 from collections import namedtuple
 from inspect import signature
 
@@ -155,20 +156,28 @@ class UserInterface():
             if len(event.keysym) == 1 and event.keysym.isalpha():
                 combine([add_to_input], event.keysym)
 
+        def popup_text(widget: Widget):
+            """Creates a popup window showing the widget text
+
+            Args:
+                widget (Widget): the widget which text will be the message in the popup window
+            """
+
+            showinfo(message=widget.cget("text"))
+
         # Frame for buttons of the calculator
         self._button_frame = Frame(self._root)
         self._button_frame.grid(row=0,column=0)
-        self._button_frame.pack_propagate(0)
         
         # The input given by the user will be shown in this label
-        self._input_area = Label(self._button_frame, text="", font=self._ui_font, background="white", anchor="w", justify="left")
+        self._input_area = Button(self._button_frame, text="", font=self._ui_font, background="white", anchor="e", justify="left", width=10, activebackground="white", command=lambda: popup_text(self._input_area))
         self._input_area.grid(row=10, column=0, columnspan=10, sticky="EW")
 
         # The previous inputs and their results will be added to the lowest of these labels. When new input is given, label texts move
         # up in the history area and the topmost label text disappears
         self._history_area = []
         for i in range(10):
-            self._history_area.append(Label(self._button_frame, font=self._ui_font, text="", background="white", anchor="w", justify="left"))
+            self._history_area.append(Button(self._button_frame, font=self._ui_font, text="", background="white", anchor="e", justify="left", borderwidth=0, activebackground="white", width=10, command=lambda: popup_text(self._history_area[i])))
             self._history_area[-1].grid(row=i, column=0, columnspan=10, sticky="EW")
 
         Key = namedtuple('Key', ['name', 'keyboard_name', 'functions']) # Key means calculator button here
