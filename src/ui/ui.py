@@ -45,8 +45,8 @@ class UserInterface():
             """
 
             if self._input_area.cget("text") and self._calculator.result:
-                next_var_key = chr(ord('A')+len(self._vars))
-                self._vars[next_var_key] = self._calculator.result
+                next_var_key = chr(ord('A')+len(self._calculator.variables))
+                self._calculator.variables[next_var_key] = self._calculator.result
                 self._vars_menu["menu"].add_command(label=next_var_key, command=lambda: combine([add_to_input], next_var_key))
                 add_to_input(" → " + next_var_key)
         
@@ -78,7 +78,7 @@ class UserInterface():
 
             if input := self._input_area.cget("text"):
                 precision = int(self._precision_menu.cget("text"))
-                result = self._calculator.calculate(input, self._vars, precision)
+                result = self._calculator.calculate(input, precision)
                 self._input_area.config(text=result)
 
         def to_input_history() -> None:

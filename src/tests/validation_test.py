@@ -1,10 +1,11 @@
 import unittest
+from decimal import Decimal
 
 from services import validation
 
 class TestValidation(unittest.TestCase):
 
-    def setUp(self) -> None:
+    def setUp(self):
         self.operators = [ord('+'),ord('-'),ord('*'),ord('/'),ord('^')]
         self.functions = [[ord('s'),ord('i'),ord('n')],[ord('c'),ord('o'),ord('s')],[ord('t'),ord('a'),ord('n')],[ord('m'),ord('a'),ord('x')],[ord('m'),ord('i'),ord('n')],[ord('l'),ord('n')],[ord('l'),ord('o'),ord('g')],[ord('s'),ord('q'),ord('r'),ord('t')],[ord('p'),ord('i')],[ord('e')]]
         self.ranges = {'A_to_Z': range(ord('A'),ord('Z')+1),
@@ -63,3 +64,27 @@ class TestValidation(unittest.TestCase):
             outputs.append(self.validator.missing_operator(input))
 
         self.assertEqual(outputs, ["Missing operator!"]*len(outputs))
+
+    def test_numbers_too_large_to_be_computed_return_its_name_with_too_large_numbers(self):
+        input = Decimal(4234324)**Decimal(3432523424)
+        result = self.validator.numbers_too_large_to_be_computed(input)
+        self.assertEqual(result, "Numbers too large to be computed!")
+
+    def test_unknown_function_used_returns_its_name_with_lowercase_alphabets_not_used_in_functions(self):
+        input = [[ord('p'),ord('r'),ord('i'),ord('n'),ord('t')],[ord('(')],[ord('3')],[ord('+')],[ord('4')],[ord(')')]]
+        result = self.validator.unknown_function_used(input)
+        self.assertEqual(result, "Unknown function used!")
+
+    def test_invalid_use_of_functions_returns_its_name_when_using_incorrect_number_of_arguments(self):
+        inputs = [[[ord('s'),ord('i'),ord('n')],[ord('(')],[ord('1')],[ord(',')],[ord('3')],[ord(')')]],
+                  [[ord('m'),ord('a'),ord('x')],[ord('(')],[ord('1')],[ord(')')]]]
+        results = [self.validator.invalid_use_of_functions(input) for input in inputs]
+        self.assertEqual(results, ["Invalid use of functions!"]*len(results))
+
+    def test_missing_function_argument_returns_its_name_missing_arguments(self):
+        inputs = [[[ord('s'),ord('i'),ord('n')],[ord('(')],[ord(')')]],
+                  [[ord('m'),ord('a'),ord('x')],[ord('(')],[ord('1')],[ord(',')],[ord(')')]],
+                  [[ord('m'),ord('a'),ord('x')],[ord('(')],[ord(',')],[ord('1')],[ord(')')]],
+                  [[ord('m'),ord('a'),ord('x')],[ord('(')],[ord(',')],[ord(')')]]]
+        results = [self.validator.missing_function_argument(input) for input in inputs]
+        self.assertEqual(results, ["Missing function argument!"]*len(results))

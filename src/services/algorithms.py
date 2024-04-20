@@ -1,4 +1,5 @@
 from collections import deque, namedtuple
+from decimal import *
 import math
 
 from services import validation, math_functions
@@ -28,17 +29,17 @@ class Calculator:
         self._constants = [self.chars_to_ints(x) for x in ['pi','e']]
 
         self.result = None
+        self.variables = {}
 
         self._validator = validation.Validator(self._ops, self._fns, self._ranges, self._ints)
 
-    def calculate(self, input_chars: str, vars_in_use: dict, precision: int) -> None:
+    def calculate(self, input_chars: str, precision: int) -> None:
         """Calculates the result based on the input string. If errors are detected by the
         validator class, the error message returned by the validator will be returned by
         the calculator. Otherwise the result appended to the input string will be returned
 
         Args:
             input_chars (str): user-given input
-            vars_in_use (dict): results of previous calculations
             precision (int): user-defined precision as decimal places of the result
 
         Returns:
@@ -47,6 +48,10 @@ class Calculator:
 
         # This is to prevent previous result from being stored in variable in case of error
         self.result = None
+        # This ensures big numbers can be stored in Decimals
+        getcontext().prec = len(input_chars)
+        # Clear error-catching traps used by Decimals
+        getcontext().clear_traps()
         # The input is converted to unicode point integers
         input_ints = self.chars_to_ints(input_chars)
         # Individual tokens (e.g. numbers, function names) are put into their own lists
@@ -54,16 +59,18 @@ class Calculator:
         # Input tokens are converted from infix to postfix notation
         tokens_in_postfix = self.shunting_yard(tokens)
         # Input tokens are converted to corresponding values (e.g. number lists to numbers)
-        values_in_postfix = self.ints_to_values(tokens_in_postfix, vars_in_use)
+        values_in_postfix = self.ints_to_values(tokens_in_postfix, self.variables)
 
-        # Either an error message or empty list is received from the validator
-        error_message = self._validator.get_errors(tokens, vars_in_use, values_in_postfix)
-        if not error_message:
-            # In case of zero division error, a None is returned instead of the result
+        # Either an error message or empty string is received from the validator
+        input_error = self._validator.get_input_error(tokens, self.variables, values_in_postfix)
+        if not input_error:
             self.result = self.evaluate_input_in_postfix_notation(values_in_postfix, precision)
-            if self.result is None:
-                return "Cannot divide by zero!"
-        return error_message or input_chars + " = " + str(self.result)
+            # Results is validated for errors encountered in evaluation
+            evalution_error = self._validator.get_evaluation_error(self.result)
+            # Result is set to None if errors were encountered during evaluation
+            if self.result.is_infinite() or self.result.is_nan():
+                self.result = None
+        return input_error or evalution_error or input_chars + " = " + str(self.result)
 
     def chars_to_ints(self, input_chars: str) -> list[int]:
         """Converts a string of characters into a list of the unicode
@@ -138,7 +145,13 @@ class Calculator:
             elif token[0] in self._ranges['a_to_z']:
                 ops.append(token)
             elif token[0] in self._ops:
-                while ops and (ops[-1][0] is not self._ints['(']) and ((precedence.get(ops[-1][0]) > precedence.get(token[0])) or (precedence.get(ops[-1][0]) == precedence.get(token[0]) and left_associative.get(token[0]))):
+                if ops:
+                    if ops[-1][0] in self._ranges['a_to_z']:
+                        precedence_1 = 1
+                    else:
+                        precedence_1 = precedence.get(ops[-1][0])
+                precedence_2 = precedence.get(token[0])
+                while ops and (ops[-1][0] is not self._ints['(']) and ((precedence_1 > precedence_2) or (precedence_1 == precedence_2 and left_associative.get(token[0]))):
                     tokens_in_postfix.append(ops.pop())
                 ops.append(token)
             elif token[0] is self._ints[',']:
@@ -176,13 +189,13 @@ class Calculator:
             deque: strings of operations and functions or numbers as floats
         """
 
-        constants = {'pi': math.pi, 'e': math.e}
+        constants = {'pi': Decimal(math.pi), 'e': Decimal(math.e)}
 
         values = deque()
         for token in tokens:
             curr = "".join(chr(number) for number in token)
             if token[0] in self._ranges['0_to_9']:
-                values.append(float(curr))
+                values.append(Decimal(curr))
             else:
                 # First non-None will be appended to the values
                 values.append(vars_in_use.get(curr) or constants.get(curr) or curr)
@@ -220,13 +233,16 @@ class Calculator:
             curr = values.popleft()
             if operation := operations.get(curr):
                 arguments = [temp.pop() for i in range(operation.args)]
-                if result := operation.function(*arguments):
-                    temp.append(result)
-                else:
+                result = Decimal(operation.function(*arguments))
+                if result.is_infinite() or result.is_nan():
                     return result
+                else:
+                    temp.append(result)
             else:
                 temp.append(curr)
+        # These are needed to get the correct precision
+        getcontext().flags[Rounded] = precision
+        digits = len(str(abs(int(temp[0])))) # Number of digits without a possible minus sign
+        getcontext().prec = precision+digits
 
-        # round() returns int if None is given as the second argument. next() returns None if none
-        # of the tokens in the given list are non-zero
-        return round(temp.pop(), next((x for x in [precision] if x), None))
+        return temp.pop()+Decimal(0.00000000001)-Decimal(0.00000000001)

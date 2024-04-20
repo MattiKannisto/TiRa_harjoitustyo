@@ -1,4 +1,5 @@
 import inspect
+from decimal import Decimal, getcontext, DivisionByZero
 
 class Validator:
     """A glass for validating the user given input. The validator uses unicode point integers in
@@ -24,7 +25,7 @@ class Validator:
         self._ranges = ranges
         self._ints = ints
 
-    def get_errors(self, tokens: list[list[int]], vars_in_use: dict, tokens_in_postfix: list[list[int]]) -> str:
+    def get_input_error(self, tokens: list[list[int]], vars_in_use: dict, tokens_in_postfix: list[list[int]]) -> str:
         """Calls all validation functions and stores their return values (function's own name or
         empty string) in a list. Either the first nonempty string of this list or an empty string
         will be returned
@@ -50,6 +51,14 @@ class Validator:
 
         return next((message for message in error_messages if message), "")
 
+    def get_evaluation_error(self, result: Decimal) -> str:
+        traps = getcontext().traps
+        error_messages = [self.division_by_zero_is_undefined(traps),
+                          self.numbers_too_large_to_be_computed(result),
+                          self.does_not_compute(result)]
+
+        return next((message for message in error_messages if message), "")
+
     def get_calling_function_name(self) -> str:
         """Gets the calling function name, replaces underscores with spaces and capitalizes
         the first letter
@@ -60,6 +69,15 @@ class Validator:
 
         name = inspect.stack()[1][3]
         return name.replace("_", " ").capitalize() + "!"
+
+    def does_not_compute(self, result):
+        return "" + result.is_nan()*self.get_calling_function_name()
+
+    def numbers_too_large_to_be_computed(self, result):
+        return "" + result.is_infinite()*self.get_calling_function_name()
+
+    def division_by_zero_is_undefined(self, traps):
+        return "" + traps[DivisionByZero]*self.get_calling_function_name()
 
     def unassigned_variables_used(self, tokens: list[list[int]], vars_in_use: dict) -> str:
         """Checks whether input list of lists of unicode point integers contains integers
@@ -91,17 +109,14 @@ class Validator:
             str: function name or empty string
         """
 
-        brackets = [self._ints['('], self._ints[')']]
         if tokens[0][0] in self._ops or tokens[-1][0] in self._ops:
             return self.get_calling_function_name()
         for i in range(len(tokens)):
             curr = tokens[i][0]
             if curr in self._ops:
-                prev = tokens[i-1][0]
                 nxt = tokens[i+1][0]
                 two_adjacent_ops = nxt in self._ops
-                op_adjacent_to_bracket = any(map(lambda e: e in [prev, nxt], brackets))
-                if two_adjacent_ops or op_adjacent_to_bracket:
+                if two_adjacent_ops:
                     return self.get_calling_function_name()
         return ""
 
@@ -182,7 +197,6 @@ class Validator:
                 if commas != 0 + 1*(tokens[i][0] == ord('m')):
                     return self.get_calling_function_name()
         return ""
-
 
     def missing_function_argument(self, tokens: list[list[int]]) -> str:
         """Checks whether input list of lists of unicode point integers contains functions

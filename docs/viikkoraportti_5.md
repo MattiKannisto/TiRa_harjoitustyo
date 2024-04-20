@@ -1,0 +1,11 @@
+Olen tällä viikolla keskittynyt sovelluksen testauksen parantamiseen. math_functions on nyt mielestäni testattu riittävän hyvin yksikkötesteillä. Calculator- ja Validator-luokat on testattu melko kattavasti yksikkötesteillä, minkä lisäksi tein niille päästä päähän -testejä, jotka varmistavat että luokkien metodit toimivat yhdessä toivotulla tavalla.
+
+Testatessani sovellusta manuaalisesti huomasin, että se kaatuu jos syötteessä on liian suuria lukuja. Niin kävi myös, jos syötteen evaluoinnissa syntyy liian suuria lukuja (esim. 4254323234^4324324234234 tekisi tällaisen virheen). Estin sovelluksen kaatumisen, kun syötteessä on suuria lukuja, sillä että otin käyttöön decimal-kirjaston Decimal-luokan, johon voi tallentaa mielivaltaisen suuria desimaalilukuja. Kyseinen luokka myös mahdollisti mm. nollalla jakamisesta johtuvan virheen tunnistamisen ja suuria lukuja tuottavien laskutoimitusten aiheuttamien virheiden tunnistamisen. Osa Decimal-luokan toiminnoista jäi vielä hieman hämärän peittoon, mutta sen käyttö esti joka tapauksessa tiettyjen virhetilanteiden syntymisen. Decimal-luokan käyttöönotto tosin monimutkaisti hieman sovelluksen rakennetta.
+
+Tein Validator-luokalle hieman lisää validointifunktioita, sillä huomasin että tietyt virhetilanteet voidaan tunnistaa ainoastaan syötettä evaluoitaessa (mm. nollalla jakaminen ja liian suurten lukujen muodostuminen). Validator validoi nyt syötteen ensin tekstimuotoisena ja, jos syötteestä ei löydetä virheitä ja se voidaan evaluoida, sitten validoi evaluoidun syötteen.
+
+Sovelluksen käyttöliittymä on nyt valmis. Päätin jättää viime viikolla suunnittelemani suurten syötteiden (jotka eivät mahdu GUI:n ikkunaan) scrollausmahdollisuuden, sillä siihen olisi kulunut liikaa aikaa. Sen sijaan muutin syötteen syöttämiseen ja syötehistorian näyttämiseen tarvittavat labelit buttoneiksi ja tein funktion, mikä tekee ponnahdusikkunan, missä on viestinä klikatun buttonin teksti kokonaisuudessaan. Näin suurten syötteiden lukeminen, esim. jos tarvitsee tarkistaa syöttämänsä suuren syötteen alkuosa, on mahdollista.
+
+Tein vertaisarvioinnin ja perehdyin oman sovellukseni saamaan palautteeseen, mutta en ehtinyt tehdä siinä mainittuja parannuksia tätä palautusta varten.
+
+Tällä viikolla käytetyt työtunnit: 19
