@@ -19,3 +19,5 @@
 [Viikko 3](https://github.com/MattiKannisto/tira-harjoitustyo/blob/main/docs/viikkoraportti_3.md)
 
 [Viikko 4](https://github.com/MattiKannisto/tira-harjoitustyo/blob/main/docs/viikkoraportti_4.md)
+
+[Viikko 5](https://github.com/MattiKannisto/tira-harjoitustyo/blob/main/docs/viikkoraportti_5.md)
