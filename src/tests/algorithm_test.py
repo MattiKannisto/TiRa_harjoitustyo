@@ -5,7 +5,7 @@ from decimal import Decimal
 
 from services import algorithms
 
-class TestValidation(unittest.TestCase):
+class TestAlgorithms(unittest.TestCase):
 
     def setUp(self) -> None:
         self.calculator = algorithms.Calculator()
@@ -13,10 +13,18 @@ class TestValidation(unittest.TestCase):
     def test_input_string_is_converted_to_integers_correctly(self):
         self.assertEqual(self.calculator.chars_to_ints("1+2*3-4"), [ord('1'),ord('+'),ord('2'),ord('*'),ord('3'),ord('-'),ord('4')])
 
-    def test_input_integers_are_converted_to_input_tokens_correctly(self):
-        input = [ord('1'),ord('2'),ord('+'),ord('s'),ord('i'),ord('n'),ord('('),ord('3'),ord(')'),ord('*'),ord('3')]
-        result = self.calculator.ints_to_tokens(input)
-        self.assertEqual(result, [[ord('1'),ord('2')],[ord('+')],[ord('s'),ord('i'),ord('n')],[ord('(')],[ord('3')],[ord(')')],[ord('*')],[ord('3')]])
+    def test_tokens_are_constructed_correctly_from_ints(self):
+        input = [ord('3'),ord('2'),ord('.'),ord('1'),ord('0'),ord('+'),ord('A'),ord('*'),ord('7'),ord('-'),ord('s'),ord('i'),ord('n'),ord('('),ord('0'),ord(')')]
+        expeceted_result = [[ord('3'),ord('2'),ord('.'),ord('1'),ord('0')],[ord('+')],[ord('A')],[ord('*')],[ord('7')],[ord('-')],[ord('s'),ord('i'),ord('n')],[ord('(')],[ord('0')],[ord(')')]]
+        self.assertEqual(self.calculator.ints_to_tokens(input), expeceted_result)
+
+    def test_shunting_yard_returns_empty_deque_when_brackets_are_unmatched(self):
+        calc = [[ord('1')],[ord('2')],[ord('+')]]
+        inputs = [[[ord('(')]]+calc, [[ord(')')]]+calc+[[ord(')')]], [[ord('(')]]+calc+[[ord('(')]], calc+[[ord(')')]]]
+        outputs = []
+        for input in inputs:
+            outputs.append(self.calculator.shunting_yard(input))
+        self.assertEqual(outputs, [deque([]), deque([]), deque([]), deque([])])
 
     def test_operators_work_by_themselves(self):
         inputs = ["1+1", "1-1", "2*3", "4/2", "2^2"]
@@ -41,14 +49,6 @@ class TestValidation(unittest.TestCase):
             outputs.append(float(self.calculator.result))
         self.assertEqual(outputs, [3-3*2+1, 3-3/2+1, 3*2**2])
 
-    def test_shunting_yard_returns_empty_list_when_brackets_are_unmatched(self):
-        calc = [[ord('1')],[ord('2')],[ord('+')]]
-        inputs = [[[ord('(')]]+calc, [[ord(')')]]+calc+[[ord(')')]], [[ord('(')]]+calc+[[ord('(')]], calc+[[ord(')')]]]
-        outputs = []
-        for input in inputs:
-            outputs.append(self.calculator.shunting_yard(input))
-        self.assertEqual(outputs, [deque([]), deque([]), deque([]), deque([])])
-
     def test_evaluate_input_in_postfix_notation_returns_decimal_nan_when_result_is_nan(self):
         self.assertTrue(self.calculator.evaluate_input_in_postfix_notation(deque(["NaN",Decimal(3),'+']),0).is_nan())
 
@@ -57,11 +57,26 @@ class TestValidation(unittest.TestCase):
         self.assertEqual(result, "Numbers too large to be computed!")
 
     def test_calculate_returns_correct_answer_with_simple_inputs(self):
-        inputs = ["3-4*2+1", "3-4/2+1", "3*4^2"]
+        inputs = ["3-4*2+1", "3-4/2+1", "3*4^2", "min(3,4)*32", "min(4,3)*32", "max(3*4,4/2)"]
         outputs = []
         for input in inputs:
             outputs.append(self.calculator.calculate(input, 0))
-        self.assertEqual(outputs, ["3-4*2+1 = " + str(3-4*2+1), "3-4/2+1 = " + str(3-int(4/2)+1), "3*4^2 = " + str(3*4**2)])
+        self.assertEqual(outputs, ["3-4*2+1 = " + str(3-4*2+1), "3-4/2+1 = " + str(3-int(4/2)+1), "3*4^2 = " + str(3*4**2), "min(3,4)*32 = " + str(3*32), "min(4,3)*32 = " + str(3*32), "max(3*4,4/2) = " + str(12)])
+
+    def test_calculate_returns_correct_answer_with_complex_inputs(self):
+        inputs = ["5*sin(max(3,2)+2)/(min(1,2))",
+                  "(1*2+(pi/e)^6)-log(10)",
+                  "34*A+B/(tan(3))-A*23+5*pi"]
+        self.calculator.variables['A'] = Decimal(34)
+        self.calculator.variables['B'] = Decimal(1)
+        outputs = []
+        expected_results = ["5*sin(max(3,2)+2)/(min(1,2)) = " + str(round(5*math.sin(max(3,2)+2)/(min(1,2)), 2)),
+                            "(1*2+(pi/e)^6)-log(10) = " + str(round((1*2+(math.pi/math.e)**6)-math.log10(10), 2)),
+                            "34*A+B/(tan(3))-A*23+5*pi = " + str(round(34*34+1/(math.tan(3))-34*23+5*math.pi, 2))]
+        for input in inputs:
+            outputs.append(self.calculator.calculate(input, 2))
+        self.calculator.variables.clear()
+        self.assertEqual(outputs, expected_results)
 
     def test_calculator_result_is_none_after_calculate_with_invalid_inputs(self):
         inputs = ["3-+4*2+1", "3-a/2+1", "3*4/0", "print(3)", "cos(2,4)"]
@@ -71,7 +86,7 @@ class TestValidation(unittest.TestCase):
             results.append(self.calculator.result)
         self.assertEqual(results, [None]*len(results))
 
-    def test_result_is_has_appropriate_precision(self):
+    def test_result_has_appropriate_precision(self):
         outputs = []
         for i in range(11):
             self.calculator.calculate("pi", i)

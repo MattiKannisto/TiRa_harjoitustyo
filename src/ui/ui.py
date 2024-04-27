@@ -45,10 +45,14 @@ class UserInterface():
             """
 
             if self._input_area.cget("text") and self._calculator.result:
-                next_var_key = chr(ord('A')+len(self._calculator.variables))
-                self._calculator.variables[next_var_key] = self._calculator.result
-                self._vars_menu["menu"].add_command(label=next_var_key, command=lambda: combine([add_to_input], next_var_key))
-                add_to_input(" → " + next_var_key)
+                next_var_ord = ord('A')+len(self._calculator.variables)
+                if next_var_ord <= ord('Z'):
+                    next_var_key = chr(next_var_ord)
+                    self._calculator.variables[next_var_key] = self._calculator.result
+                    self._vars_menu["menu"].add_command(label=next_var_key, command=lambda: combine([add_to_input], next_var_key))
+                    add_to_input(" → " + next_var_key)
+                else:
+                    add_to_input(" → All variables in use!")
         
         def add_to_input(text: str) -> None:
             """Appends text to the input
@@ -188,7 +192,7 @@ class UserInterface():
                                [Key('7', '7', [add_to_input]),           Key('8', '8', [add_to_input]),           Key('9', '9', [add_to_input]),           Key('+', 'plus', [add_to_input]),        Key('ln', '', [add_to_input])],
                                [Key('4', '4', [add_to_input]),           Key('5', '5', [add_to_input]),           Key('6', '6', [add_to_input]),           Key('-', 'minus', [add_to_input]),       Key('pi', '', [add_to_input])],
                                [Key('1', '1', [add_to_input]),           Key('2', '2', [add_to_input]),           Key('3', '3', [add_to_input]),           Key('*', 'asterisk', [add_to_input]),    Key('sqrt', '', [add_to_input]),     Key(',', 'comma', [add_to_input])],
-                               [Key('(', 'parenleft', [add_to_input]),   Key('0', '0', [add_to_input]),           Key(')', 'parenright', [add_to_input]),  Key('/', 'slash', [add_to_input]),       Key('^', '', [add_to_input]),        Key('=', 'Return', [to_input_history, calculate, move_to_history, erase])],
+                               [Key('(', 'parenleft', [add_to_input]),   Key('0', '0', [add_to_input]),           Key(')', 'parenright', [add_to_input]),  Key('/', 'slash', [add_to_input]),       Key('^', 'less', [add_to_input]),        Key('=', 'Return', [to_input_history, calculate, move_to_history, erase])],
                                [Key('C', 'BackSpace', [back_space]),     Key('AC', 'Delete', [erase]),            Key('.', 'period', [add_to_input]),      Key('log', '', [add_to_input]),          Key('e', '', [add_to_input]),        Key('→X', 'Right', [to_input_history, calculate, save_result_to_variable, move_to_history, erase])]]
         # This adds the buttons to the GUI and binds them to their functions        
         starting_row = 11

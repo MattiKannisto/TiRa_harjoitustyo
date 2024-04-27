@@ -3,7 +3,7 @@ from decimal import Decimal, getcontext
 
 from services import math_functions
 
-class TestValidation(unittest.TestCase):
+class TestMathFunctions(unittest.TestCase):
     def setUp(self):
         getcontext().prec = 10000000
         self.inputs = [[Decimal(1),Decimal(2)], [Decimal(-5),Decimal(3)], [Decimal(-6),Decimal(-2)], [Decimal(1),Decimal(0)], [Decimal(134324324),Decimal(0)], [Decimal(1111111111111111111111111111111111111111111111111),Decimal(11111111111111111111111111111111111111111111111111111)]]
@@ -41,7 +41,7 @@ class TestValidation(unittest.TestCase):
 
         self.assertEqual(test_results, expected_results)
 
-    def test_division_returns_nan_when_divisiding_by_zero(self):
+    def test_division_returns_nan_when_dividing_by_zero(self):
         self.assertEqual(math_functions.divide(Decimal(0), Decimal(3)).is_nan(), Decimal('NaN').is_nan())
 
     def test_division_returns_nan_when_division_fails(self):

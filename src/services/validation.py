@@ -43,6 +43,7 @@ class Validator:
         error_messages = [self.unassigned_variables_used(tokens, vars_in_use),
                           self.invalid_use_of_operators(tokens),
                           self.unknown_function_used(tokens),
+                          self.missing_function(tokens),
                           self.missing_operator(tokens),
                           self.invalid_use_of_dot(tokens),
                           self.invalid_use_of_functions(tokens),
@@ -196,6 +197,31 @@ class Validator:
                         break
                 if commas != 0 + 1*(tokens[i][0] == ord('m')):
                     return self.get_calling_function_name()
+        return ""
+
+    def missing_function(self, tokens: list[list[int]]) -> str:
+        """Checks there are no commas outside functions brackets
+
+        Args:
+            tokens (list[list[int]]): lists of unicode point integers of the input tokens
+
+        Returns:
+            str: function name or empty string
+        """
+
+        functions = 0
+        brackets = 0
+        for token in tokens:
+            # Comma found outside functions
+            if functions <= 0 and token[0] is self._ints[',']:
+                return self.get_calling_function_name()
+            # Ensure all commas are within functions' brackets
+            functions += token[0] in self._ranges['a_to_z']
+            brackets += token[0] is self._ints['('] * (functions > 0)
+            functions -= token[0] is self._ints[')'] * (functions > 0)
+            brackets -= (token[0] is self._ints[')']) * (brackets > 0)
+            if token[0] is self._ints[','] and functions != brackets:
+                return self.get_calling_function_name()
         return ""
 
     def missing_function_argument(self, tokens: list[list[int]]) -> str:

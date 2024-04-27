@@ -100,24 +100,16 @@ class Calculator:
         tokens = []
         curr = []
         brackets = [self._ints['('], self._ints[')']]
-        for token in input_ints:
-            if token in self._ranges['A_to_Z'] or token in self._ops + brackets + [self._ints[',']]:
+        for input_int in input_ints:
+            if input_int in self._ranges['A_to_Z'] or input_int in self._ops + brackets + [self._ints[',']]:
                 if curr:
                     tokens.append(curr)
                     curr = []
-                tokens.append([token])
-            elif token in self._ranges['0_to_9'] or token is self._ints['.']:
-                if (curr and ((curr[-1] not in self._ranges['0_to_9']) and (curr[-1] != self._ints['.']))):
-                    tokens.append(curr)
-                    curr = []
-                curr.append(token)
-            elif token in self._ranges['a_to_z']:
-                if curr and curr[-1] not in self._ranges['a_to_z']:
-                    tokens.append(curr)
-                    curr = []
-                curr.append(token)
-            else:
-                return []
+                tokens.append([input_int])
+            elif input_int in self._ranges['0_to_9'] or input_int is self._ints['.']:
+                curr.append(input_int)
+            else: # input_int has to be in self._ranges['a_to_z']
+                curr.append(input_int)
         if curr:
             tokens.append(curr)
         return tokens
@@ -147,7 +139,7 @@ class Calculator:
             elif token[0] in self._ops:
                 if ops:
                     if ops[-1][0] in self._ranges['a_to_z']:
-                        precedence_1 = 1
+                        precedence_1 = 4
                     else:
                         precedence_1 = precedence.get(ops[-1][0])
                 precedence_2 = precedence.get(token[0])
@@ -159,14 +151,14 @@ class Calculator:
                     tokens_in_postfix.append(ops.pop())
             elif token[0] is self._ints['(']:
                 ops.append(token)
-            elif token[0] is self._ints[')']:
+            else: # token[0] has to be self._ints[')'] since it is the only valid token left
                 while ops and ops[-1][0] is not self._ints['(']:
                     tokens_in_postfix.append(ops.pop())
                 if ops and ops[-1][0] is self._ints['(']:
                     ops.pop()
                 else:
                     return deque([])
-                if ops and ops[-1][0] in self._ranges['A_to_Z']:
+                if ops and ops[-1][0] in self._ranges['a_to_z']:
                     tokens_in_postfix.append(ops.pop())
 
         while len(ops) > 0:
@@ -240,9 +232,9 @@ class Calculator:
                     temp.append(result)
             else:
                 temp.append(curr)
-        # These are needed to get the correct precision
-        getcontext().flags[Rounded] = precision
+        # This is needed to get the correct precision for the Decimal object
         digits = len(str(abs(int(temp[0])))) # Number of digits without a possible minus sign
         getcontext().prec = precision+digits
 
+        # The pointless addition needed to update Decimal's precision
         return temp.pop()+Decimal(0.00000000001)-Decimal(0.00000000001)
