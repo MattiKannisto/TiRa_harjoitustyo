@@ -25,7 +25,8 @@ class Validator:
         self._ranges = ranges
         self._ints = ints
 
-    def get_input_error(self, tokens: list[list[int]], vars_in_use: dict, tokens_in_postfix: list[list[int]]) -> str:
+    def get_input_error(self, tokens: list[list[int]], vars_in_use: dict,
+                        tokens_in_postfix: list[list[int]]) -> str:
         """Calls all validation functions and stores their return values (function's own name or
         empty string) in a list. Either the first nonempty string of this list or an empty string
         will be returned
@@ -134,11 +135,17 @@ class Validator:
         for i in range(len(tokens)-1):
             curr = tokens[i][0]
             nxt = tokens[i+1][0]
-            cant_be_adjacent = [self._ranges['a_to_z'],self._ranges['A_to_Z'],self._ranges['0_to_9']]
-            num_or_var = [self._ranges['A_to_Z'],self._ranges['0_to_9']]
-            no_op_before_l_bracket = any(curr in x for x in num_or_var) and nxt is self._ints['(']
-            no_op_after_r_bracket = curr is self._ints[')'] and any(nxt in n for n in cant_be_adjacent)
-            if any([any(curr in x for x in cant_be_adjacent) and any(nxt in n for n in cant_be_adjacent),
+            cant_be_adjacent = [self._ranges['a_to_z'],
+                                self._ranges['A_to_Z'],
+                                self._ranges['0_to_9']]
+            num_or_var = [self._ranges['A_to_Z'],
+                          self._ranges['0_to_9']]
+            curr_num_or_var = any(curr in x for x in num_or_var)
+            no_op_before_l_bracket = curr_num_or_var and nxt is self._ints['(']
+            nxt_not_allowed = any(nxt in n for n in cant_be_adjacent)
+            curr_not_allowed = any(curr in x for x in cant_be_adjacent)
+            no_op_after_r_bracket = curr is self._ints[')'] and nxt_not_allowed
+            if any([curr_not_allowed and nxt_not_allowed,
                     no_op_before_l_bracket, no_op_after_r_bracket]):
                 return self.get_calling_function_name()
         return ""
@@ -183,20 +190,21 @@ class Validator:
         """
 
         for i in range(len(tokens)):
-            if tokens[i][0] in self._ranges['a_to_z']:
-                brackets = 0
-                commas = 0
-                for j in range(i+1,len(tokens)):
-                    if brackets == 1 and tokens[j][0] is self._ints[',']:
-                        commas += 1
-                    if tokens[j][0] is self._ints['(']:
-                        brackets += 1
-                    elif tokens[j][0] is self._ints[')']:
-                        brackets -= 1
-                    if brackets <= 0:
-                        break
-                if commas != 0 + 1*(tokens[i][0] == ord('m')):
-                    return self.get_calling_function_name()
+            if tokens[i][0] not in self._ranges['a_to_z']:
+                continue
+            brackets = 0
+            commas = 0
+            for j in range(i+1,len(tokens)):
+                if brackets == 1 and tokens[j][0] is self._ints[',']:
+                    commas += 1
+                if tokens[j][0] is self._ints['(']:
+                    brackets += 1
+                elif tokens[j][0] is self._ints[')']:
+                    brackets -= 1
+                if brackets <= 0:
+                    break
+            if commas != 0 + 1*(tokens[i][0] == ord('m')):
+                return self.get_calling_function_name()
         return ""
 
     def missing_function(self, tokens: list[list[int]]) -> str:
@@ -225,8 +233,8 @@ class Validator:
         return ""
 
     def missing_function_argument(self, tokens: list[list[int]]) -> str:
-        """Checks whether input list of lists of unicode point integers contains functions
-        missing arguments
+        """Checks whether input list of lists of unicode point integers contains
+        functions missing arguments
 
         Args:
             tokens (list[list[int]]): lists of unicode point integers of the input tokens
@@ -236,7 +244,8 @@ class Validator:
         """
 
         for i in range(len(tokens)):
-            if tokens[i][0] is self._ints['('] and tokens[i+1][0] in [self._ints[','], self._ints[')']]:
+            if tokens[i][0] is self._ints['('] and tokens[i+1][0] in [self._ints[','],
+                                                                      self._ints[')']]:
                 return self.get_calling_function_name()
             if tokens[i][0] is self._ints[','] and tokens[i+1][0] is self._ints[')']:
                 return self.get_calling_function_name()

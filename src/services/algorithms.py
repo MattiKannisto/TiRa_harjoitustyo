@@ -1,5 +1,5 @@
 from collections import deque, namedtuple
-from decimal import *
+from decimal import Decimal, getcontext
 import math
 
 from services import validation, math_functions
@@ -86,9 +86,9 @@ class Calculator:
         return [ord(char) for char in input_chars]
 
     def ints_to_tokens(self, input_ints: list[int]) -> list[list[int]]:
-        """Checks which unicode point integers are part of a number or function name and saves them in
-        the output list as a list of integers. Other allowed characters' unicode point integers are
-        stored in their own lists
+        """Checks which unicode point integers are part of a number or function
+        name and saves them in the output list as a list of integers. Other
+        allowed characters' unicode point integers are stored in their own lists
 
         Args:
             input_ints (list[int]): unicode point integers of the input string characters
@@ -101,7 +101,8 @@ class Calculator:
         curr = []
         brackets = [self._ints['('], self._ints[')']]
         for input_int in input_ints:
-            if input_int in self._ranges['A_to_Z'] or input_int in self._ops + brackets + [self._ints[',']]:
+            if input_int in self._ranges['A_to_Z'] or (
+                input_int in self._ops + brackets + [self._ints[',']]):
                 if curr:
                     tokens.append(curr)
                     curr = []
@@ -128,22 +129,33 @@ class Calculator:
 
         tokens_in_postfix = deque()
         ops = deque()
-        precedence = {ord('+'): 1, ord('-'):1, ord('*'): 2, ord('/'): 2, ord('^'): 3}
-        left_associative = {ord('+'): True, ord('-'): True, ord('*'): True, ord('/'): True, ord('^'): False}
+        precedence = {ord('+'): 1,
+                      ord('-'):1,
+                      ord('*'): 2,
+                      ord('/'): 2,
+                      ord('^'): 3}
+        left_associative = {ord('+'): True,
+                            ord('-'): True,
+                            ord('*'): True,
+                            ord('/'): True,
+                            ord('^'): False}
 
         for token in tokens:
-            if token[0] in self._ranges['0_to_9'] or token[0] in self._ranges['A_to_Z'] or token in self._constants:
+            if (token[0] in self._ranges['0_to_9']) or (
+                token[0] in self._ranges['A_to_Z']) or (
+                token in self._constants):
                 tokens_in_postfix.append(token)
             elif token[0] in self._ranges['a_to_z']:
                 ops.append(token)
             elif token[0] in self._ops:
-                if ops:
-                    if ops[-1][0] in self._ranges['a_to_z']:
-                        precedence_1 = 4
-                    else:
-                        precedence_1 = precedence.get(ops[-1][0])
+                if ops and (ops[-1][0] in self._ranges['a_to_z']):
+                    precedence_1 = 4
+                elif ops:
+                    precedence_1 = precedence.get(ops[-1][0])
                 precedence_2 = precedence.get(token[0])
-                while ops and (ops[-1][0] is not self._ints['(']) and ((precedence_1 > precedence_2) or (precedence_1 == precedence_2 and left_associative.get(token[0]))):
+                while ops and (ops[-1][0] is not self._ints['(']) and (
+                    (precedence_1 > precedence_2) or (
+                        precedence_1 == precedence_2 and left_associative.get(token[0]))):
                     tokens_in_postfix.append(ops.pop())
                 ops.append(token)
             elif token[0] is self._ints[',']:
@@ -228,8 +240,7 @@ class Calculator:
                 result = Decimal(operation.function(*arguments))
                 if result.is_infinite() or result.is_nan():
                     return result
-                else:
-                    temp.append(result)
+                temp.append(result)
             else:
                 temp.append(curr)
         # This is needed to get the correct precision for the Decimal object

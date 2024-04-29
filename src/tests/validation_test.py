@@ -87,7 +87,7 @@ class TestValidation(unittest.TestCase):
                   [[ord('m'),ord('a'),ord('x')],[ord('(')],[ord(',')],[ord('1')],[ord(')')]],
                   [[ord('m'),ord('a'),ord('x')],[ord('(')],[ord(',')],[ord(')')]]]
         results = [self.validator.missing_function_argument(input) for input in inputs]
-        self.assertEqual(results, ["Missing function argument!"]*len(results))
+        self.assertEqual(results, ["Missing function argument!"]*len(results))  
 
     def test_missing_function_returns_its_name_with_missing_function_name(self):
         inputs = [[[ord('3')],[ord(',')],[ord('3')]],

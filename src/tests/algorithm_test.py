@@ -26,6 +26,9 @@ class TestAlgorithms(unittest.TestCase):
             outputs.append(self.calculator.shunting_yard(input))
         self.assertEqual(outputs, [deque([]), deque([]), deque([]), deque([])])
 
+    def test_evaluate_input_in_postfix_notation_returns_decimal_nan_when_result_is_nan(self):
+        self.assertTrue(self.calculator.evaluate_input_in_postfix_notation(deque(["NaN",Decimal(3),'+']),0).is_nan())
+
     def test_operators_work_by_themselves(self):
         inputs = ["1+1", "1-1", "2*3", "4/2", "2^2"]
         outputs = []
@@ -49,12 +52,24 @@ class TestAlgorithms(unittest.TestCase):
             outputs.append(float(self.calculator.result))
         self.assertEqual(outputs, [3-3*2+1, 3-3/2+1, 3*2**2])
 
-    def test_evaluate_input_in_postfix_notation_returns_decimal_nan_when_result_is_nan(self):
-        self.assertTrue(self.calculator.evaluate_input_in_postfix_notation(deque(["NaN",Decimal(3),'+']),0).is_nan())
-
     def test_calculate_returns_decimal_infinite_when_result_is_infinite(self):
         result = self.calculator.calculate("34325435435^32432432432",0)
         self.assertEqual(result, "Numbers too large to be computed!")
+
+    def test_calculator_result_is_none_after_calculate_with_invalid_inputs(self):
+        inputs = ["3-+4*2+1", "3-a/2+1", "3*4/0", "print(3)", "cos(2,4)"]
+        results = []
+        for input in inputs:
+            self.calculator.calculate(input, 0)
+            results.append(self.calculator.result)
+        self.assertEqual(results, [None]*len(results))
+
+    def test_result_has_appropriate_precision(self):
+        outputs = []
+        for i in range(11):
+            self.calculator.calculate("pi", i)
+            outputs.append(float(self.calculator.result))
+        self.assertEqual(outputs, [3, 3.1, 3.14, 3.142, 3.1416, 3.14159, 3.141593, 3.1415927, 3.14159265, 3.141592654, 3.1415926536])
 
     def test_calculate_returns_correct_answer_with_simple_inputs(self):
         inputs = ["3-4*2+1", "3-4/2+1", "3*4^2", "min(3,4)*32", "min(4,3)*32", "max(3*4,4/2)"]
@@ -77,21 +92,6 @@ class TestAlgorithms(unittest.TestCase):
             outputs.append(self.calculator.calculate(input, 2))
         self.calculator.variables.clear()
         self.assertEqual(outputs, expected_results)
-
-    def test_calculator_result_is_none_after_calculate_with_invalid_inputs(self):
-        inputs = ["3-+4*2+1", "3-a/2+1", "3*4/0", "print(3)", "cos(2,4)"]
-        results = []
-        for input in inputs:
-            self.calculator.calculate(input, 0)
-            results.append(self.calculator.result)
-        self.assertEqual(results, [None]*len(results))
-
-    def test_result_has_appropriate_precision(self):
-        outputs = []
-        for i in range(11):
-            self.calculator.calculate("pi", i)
-            outputs.append(float(self.calculator.result))
-        self.assertEqual(outputs, [3, 3.1, 3.14, 3.142, 3.1416, 3.14159, 3.141593, 3.1415927, 3.14159265, 3.141592654, 3.1415926536])
 
     def test_big_numbers_are_processed_correctly(self):
         input = "100000000000000000000000000000000000000000000000000000"
