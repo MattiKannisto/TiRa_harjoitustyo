@@ -2,7 +2,7 @@
 
 Sovelluksen käyttämät omatekemät matemaattiset funktiot ja Calculator- ja Validator-luokkien funktiot on testattu yksikkötesteillä hyödyntäen unittest-kirjastoa. Kyseisiä luokkia testataan sekä oikeellisilla että virheellisillä syötteillä. Funktioita testataan sekä yksinkertaisilla syötteillä, jotta funktioiden mahdollisesti sisältävät virheet olisi helppo tunnistaa, mutta myös monimutkaisilla syötteillä, jotka simuloivat paremmin sovelluksen käytössä saamia syötteitä. Käyttöliittymä on jätetty automaattisen testauksen ulkopuolelle, sillä käyttöliittymäohjelmointi ei ole kurssin ydinasiaa ja halusin keskittyä enemmän algoritmien kehittämiseen ja niiden testaamiseen. Sovelluksella on 24.4.2024 100 % testikattavuus:
 
-![Testikattavuus](testikattavuus_viikko_6.png)
+![Testikattavuus](testikattavuus_loppupalautus.png)
 
 Koska tieteellisen laskimen saamat syötteet ovat lähes aina melko lyhyitä, en kokenut tarpeelliseksi tehdä suorituskykyä mittaavia testejä sovellukselle. Tieteellisen laskimen toteutuksessa algoritmisia haasteita asettaa syötteen validointi, sillä syöte voi sisältää suuren määrän erilaisia virheitä ja niiden tunnistaminen on sovellukselle hankalahkoa. Keskityin siksi syötteen validoinnin ja prosessoinnin testaamiseen. Tästä syystä en myöskään tehnyt vertailua vaihtoehtoisten toteutustapojen kanssa.
 

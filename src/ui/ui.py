@@ -44,7 +44,7 @@ class UserInterface():
             has content and the result exists
             """
 
-            if self._input_area.cget("text") and self._calculator.result:
+            if self._input_area.cget("text") and self._calculator.result is not None:
                 next_var_ord = ord('A')+len(self._calculator.variables)
                 if next_var_ord <= ord('Z'):
                     next_var_key = chr(next_var_ord)

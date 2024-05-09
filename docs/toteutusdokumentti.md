@@ -8,3 +8,43 @@ Sovellus hyödyntää validoinnissa ja laskutoimitusten evaluoinnissa sitä, ett
 
 ### Suorituskyky
 Sovelluksen algoritmeilla on seuraavat aikavaativuudet:
+
+Calculator-luokasta testatiin funktiot seuraavasti:
+- chars_to_ints
+    - Koska funktiossa rakennetaan uusi lista yksinkertaisen list comprehensionin avulla, on aikavaativuus O(n)
+- ints_to_tokens
+    - Funktiossa on yksi for loop, jossa on yksinkertaisia vertailuoperaatioita ja listan append()-funktiokutsuja (aikavaativuus O(1)), joten funktion aikavaativuus on O(n)
+- shunting_yard
+    - Shunting yard -algoritmin aikavaativuus on O(n) ([viite] (https://en.wikipedia.org/wiki/Shunting_yard_algorithm))
+- ints_to_values
+    - Funktiossa on for loop, jossa yhdistetään merkkijonoja ja lisätään alkio dequeen, joten aikavaativuus on O(n)
+- evaluate_input_in_postfix_notation
+    - Funktiossa on while loop, jossa popataan alkioita dequesta tai lisätään alkioita dequeen (kummankin aikavaativuus O(1)), joten aikavaativuus on O(n)
+
+Validator-luokasta testattiin funktiot seuraavasti:
+- get_calling_function_name
+    - Palauttaa kutsuvan funktion nimen isolla alkukirjaimella ja huutomerkillä, eikä tehokkuus riipu sovelluksen saamasta syötteestä
+- does_not_compute, numbers_too_large_to_be_computed, division_by_zero_is_undefined
+    - Funktiot yhdistävät tyhjään merkkijonoon totuusarvolla kerrotun get_calling_function_name -funktion paluuarvon, joten niiden aikavaativuus on O(1)
+- unassigned_variables_used
+    - Funktio sisältää for loopin, missä suoritetaan yksinkertainen vertailuoperaatio jokaisen alkion kohdalla, joten aikavaativuus on O(n)
+- invalid_use_of_operators
+    - Funktio sisältää for loopin, missä suoritetaan yksi tai kaksi yksinkertaista vertailuoperaatiota jokaisen alkion kohdalla, joten aikavaativuus on O(n)
+- missing_operator
+    - Funktio käy läpi syötteen yhdellä for loopilla, joten aikavaativuus on O(n)
+- unknown_function_used
+    - Funktiossa käydään syötteen tokenit läpi yhdellä for loopilla, joten aikavaativuus on O(n)
+- invalid_use_of_dot
+    - Funktiossa etsitään löytyykö syötelistasta tiettyä alkiota ja kerrotaan paluuarvo get_calling_function_name:n paluuarvolla, joten aikavaativuus on O(n)
+- invalid_use_of_functions
+    - Funktiossa on kaksi sisäkkäistä for looppia syötteen läpikäymiselle, joten aikavaativuus on O(n^2)
+- missing_function
+    - Funktiossa suoritetaan jokaisen syötteen tokenin kohdalla kuusi vertailuoperaatiota, joten aikavaativuus on O(n)
+- missing_function_argument
+    - Funktio tekee neljä vertailuoperaatiota jokaiselle syötteen tokenille, joten aikavaativuus on O(n)
+- mismatched_parentheses
+    - Funktio palauttaa nimensä isolla alkukirjaimella ja huutomerkillä, jos sen saama argumentti on tyhjä lista, joten sen aikavaatimus on O(1)
+
+### Puutteet
+
+Sovelluksen rakenteen kannalta suurin puute on, että Calculator-luokka on riippuvainen Validator-luokasta, mikä hankaloittaa sovelluksen testaamista. Syötteen validointi merkkien unicode-lukujen avulla monimutkaistaa sovelluksen rakennetta ja tekee myös testaamisesta hankalampaa. Shunting yard -algoritmi on melko pitkä ja monimutkainen. Jos sitä pystyisi mielekkäästi yksinkertaistamaan tai muuten selkeyttämään, sen ymmärtäminen helpottuisi.

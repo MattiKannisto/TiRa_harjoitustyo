@@ -158,7 +158,7 @@ class Calculator:
                         precedence_1 == precedence_2 and left_associative.get(token[0]))):
                     tokens_in_postfix.append(ops.pop())
                 ops.append(token)
-            elif token[0] is self._ints[',']:
+            elif token[0] is self._ints[',']:   
                 while ops and (ops[-1][0] is not self._ints['(']):
                     tokens_in_postfix.append(ops.pop())
             elif token[0] is self._ints['(']:
@@ -247,5 +247,9 @@ class Calculator:
         digits = len(str(abs(int(temp[0])))) # Number of digits without a possible minus sign
         getcontext().prec = precision+digits
 
-        # The pointless addition needed to update Decimal's precision
-        return temp.pop()+Decimal(0.00000000001)-Decimal(0.00000000001)
+        result = temp.pop()
+        # The pointless addition needed to update Decimal's precision for non-zero values
+        if result != 0:
+            result += Decimal(0.00000000001)-Decimal(0.00000000001)
+
+        return result

@@ -132,14 +132,15 @@ class Validator:
             str: function name or empty string
         """
 
+        cant_be_adjacent = [self._ranges['a_to_z'],
+                            self._ranges['A_to_Z'],
+                            self._ranges['0_to_9']]
+        num_or_var = [self._ranges['A_to_Z'],
+                        self._ranges['0_to_9']]
+
         for i in range(len(tokens)-1):
             curr = tokens[i][0]
             nxt = tokens[i+1][0]
-            cant_be_adjacent = [self._ranges['a_to_z'],
-                                self._ranges['A_to_Z'],
-                                self._ranges['0_to_9']]
-            num_or_var = [self._ranges['A_to_Z'],
-                          self._ranges['0_to_9']]
             curr_num_or_var = any(curr in x for x in num_or_var)
             no_op_before_l_bracket = curr_num_or_var and nxt is self._ints['(']
             nxt_not_allowed = any(nxt in n for n in cant_be_adjacent)
@@ -244,10 +245,9 @@ class Validator:
         """
 
         for i in range(len(tokens)):
-            if tokens[i][0] is self._ints['('] and tokens[i+1][0] in [self._ints[','],
-                                                                      self._ints[')']]:
-                return self.get_calling_function_name()
-            if tokens[i][0] is self._ints[','] and tokens[i+1][0] is self._ints[')']:
+            if (tokens[i][0] is self._ints['('] and tokens[i+1][0] in [self._ints[','],
+                                                                      self._ints[')']]) or (
+                tokens[i][0] is self._ints[','] and tokens[i+1][0] is self._ints[')']):
                 return self.get_calling_function_name()
         return ""
 
