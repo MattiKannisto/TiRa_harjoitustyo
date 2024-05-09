@@ -27,9 +27,9 @@ class Validator:
 
     def get_input_error(self, tokens: list[list[int]], vars_in_use: dict,
                         tokens_in_postfix: list[list[int]]) -> str:
-        """Calls all validation functions and stores their return values (function's own name or
-        empty string) in a list. Either the first nonempty string of this list or an empty string
-        will be returned
+        """Calls all validation functions on the tokens of the input and stores their return
+        values (function's own name or empty string) in a list. Either the first nonempty
+        string of this list or an empty string will be returned
 
         Args:
             tokens (list[list[int]]): lists of unicode point integers of the input tokens
@@ -54,6 +54,17 @@ class Validator:
         return next((message for message in error_messages if message), "")
 
     def get_evaluation_error(self, result: Decimal) -> str:
+        """Calls all validation functions on the result of the evaluation of the input and stores
+        their return values (function's own name or empty string) in a list. Either the first
+        nonempty string of this list or an empty string will be returned
+
+        Args:
+            result (Decimal): the result of evaluation of the input
+
+        Returns:
+            str: an error message or an empty string
+        """
+
         traps = getcontext().traps
         error_messages = [self.division_by_zero_is_undefined(traps),
                           self.numbers_too_large_to_be_computed(result),
@@ -72,13 +83,44 @@ class Validator:
         name = inspect.stack()[1][3]
         return name.replace("_", " ").capitalize() + "!"
 
-    def does_not_compute(self, result):
+    def does_not_compute(self, result: Decimal) -> str:
+        """Catches errors that haven't been anticipated and thus aren't tested by other
+        functions of Validator class
+
+        Args:
+            result (Decimal): the result of evaluation of the input
+
+        Returns:
+            str: function name or empty string
+        """
+
         return "" + result.is_nan()*self.get_calling_function_name()
 
-    def numbers_too_large_to_be_computed(self, result):
+    def numbers_too_large_to_be_computed(self, result: Decimal) -> str:
+        """Checks whether the result Decimal is infinite and, if it is,
+        returns its name as an error message
+
+        Args:
+            result (Decimal): the result of evaluation of the input
+
+        Returns:
+            str: function name or empty string
+        """
+
         return "" + result.is_infinite()*self.get_calling_function_name()
 
-    def division_by_zero_is_undefined(self, traps):
+    def division_by_zero_is_undefined(self, traps: dict) -> str:
+        """Checks whether the input has contained division by zero based
+        on result Decimal's traps. If division by zero has occurred, returns
+        its name as an error message
+
+        Args:
+            traps (dict): traps of the result Decimal
+
+        Returns:
+            str: function name or empty string
+        """
+
         return "" + traps[DivisionByZero]*self.get_calling_function_name()
 
     def unassigned_variables_used(self, tokens: list[list[int]], vars_in_use: dict) -> str:
