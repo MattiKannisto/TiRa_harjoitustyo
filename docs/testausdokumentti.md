@@ -19,8 +19,6 @@ Calculator-luokasta testatiin funktiot seuraavasti:
     - Funktiolle annettiin argumenttina unicode-lukujen listan ja varmistettiin että se palauttaa listan tokenien unicode-lukujen listoja, eli että se tunnistaa tokenit oikein syötteestä
 - shunting_yard
     - Palauttaako funktio tyhjän dequen, jos kaarisulkeet eivät täsmää. Funktion toiminta oikeellisilla syötteillä testataan calculate-funktion testauksen yhteydessä, sillä calculate hyödyntää kaikkia muita luokan funktioita
-- ints_to_values
-    - 
 - evaluate_input_in_postfix_notation
     - Palauttaako funktio Decimal('Nan'):n kun postfix-notaatiossa olevaa syötettä ei voida evaluoida. Funktion toiminta oikeellisilla syötteillä testattiin calculate-funktion testeissä
 - calculate
