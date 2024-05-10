@@ -15,7 +15,7 @@ Calculator-luokka:
 - ints_to_tokens
     - Funktiossa on yksi for loop, jossa on yksinkertaisia vertailuoperaatioita ja listan append()-funktiokutsuja (aikavaativuus O(1)), joten funktion aikavaativuus on O(n)
 - shunting_yard
-    - Shunting yard -algoritmin aikavaativuus on O(n) ([viite] (https://en.wikipedia.org/wiki/Shunting_yard_algorithm))
+    - Shunting yard -algoritmin aikavaativuus on O(n) ([viite](https://en.wikipedia.org/wiki/Shunting_yard_algorithm))
 - ints_to_values
     - Funktiossa on for loop, jossa yhdistetään merkkijonoja ja lisätään alkio dequeen, joten aikavaativuus on O(n)
 - evaluate_input_in_postfix_notation
