@@ -9,7 +9,7 @@ Sovellus hyödyntää validoinnissa ja laskutoimitusten evaluoinnissa sitä, ett
 ### Suorituskyky
 Sovelluksen algoritmeilla on seuraavat aikavaativuudet:
 
-Calculator-luokasta testatiin funktiot seuraavasti:
+Calculator-luokka:
 - chars_to_ints
     - Koska funktiossa rakennetaan uusi lista yksinkertaisen list comprehensionin avulla, on aikavaativuus O(n)
 - ints_to_tokens
@@ -21,7 +21,7 @@ Calculator-luokasta testatiin funktiot seuraavasti:
 - evaluate_input_in_postfix_notation
     - Funktiossa on while loop, jossa popataan alkioita dequesta tai lisätään alkioita dequeen (kummankin aikavaativuus O(1)), joten aikavaativuus on O(n)
 
-Validator-luokasta testattiin funktiot seuraavasti:
+Validator-luokka:
 - get_calling_function_name
     - Palauttaa kutsuvan funktion nimen isolla alkukirjaimella ja huutomerkillä, eikä tehokkuus riipu sovelluksen saamasta syötteestä
 - does_not_compute, numbers_too_large_to_be_computed, division_by_zero_is_undefined
